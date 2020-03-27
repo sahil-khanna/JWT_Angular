@@ -1,0 +1,71 @@
+/* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+/* You can add global styles to this file, and also import other style files
+@import "../node_modules/@angular/material/prebuilt-themes/indigo-pink.css";
+@import "~material-design-icons/iconfont/material-icons.css"; */
+
+.form-error-message > p {
+    color: red;
+    font-size: small;
+    margin-top: -15px;
+}
+
+.error {
+    color: red;
+}
+
+.right-aligned {
+    position: absolute;
+    right: 10px;
+}
+
+.nav-bar-section-right {
+    margin-left: auto;
+}
+
+.form {
+    box-shadow: 1px 1px 2px;
+}
+
+.form mat-form-field {
+    width: 95%;
+    margin-left: 1vh;
+}
+
+.profile-image {
+    width: 120px;
+    height: 120px;
+    margin: auto;
+    display: block;
+    border-radius: 50%;
+}
+
+.list-item mat-list-item {
+    border-bottom-color: #3f51b5;
+    border-bottom-style: solid;
+    border-bottom-width: thin;
+}
+
+.add-item-floating {
+    position: fixed;
+    right: 50px;
+    bottom: 78px;
+}
+
+.add-item-floating mat-icon {
+    color: #009CF1;
+    font-size: -webkit-xxx-large;
+}
+
+.no-data-list {
+    text-align: center;
+    margin-top: 18vh;
+    color: red;
+}
+
+.no-data-list mat-icon {
+    margin-left: -20px;
+    font-size: -webkit-xxx-large;
+}

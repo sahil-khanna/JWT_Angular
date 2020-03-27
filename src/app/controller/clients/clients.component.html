@@ -1,0 +1,16 @@
+<mat-toolbar color="primary">
+	<mat-toolbar-row>
+		<span>Clients</span>
+		<mat-icon (click)="add()" style="margin-left: auto;">add</mat-icon>
+	</mat-toolbar-row>
+</mat-toolbar>
+
+<mat-list>
+	<mat-list-item *ngFor="let book of books">
+		<h1 mat-line><b>{{book.data.title}}</b></h1>
+		<p mat-line>{{book.data.author}}</p>
+		<p>₹{{book.data.mrp}}</p>
+		<mat-icon>keyboard_arrow_right</mat-icon>
+		<mat-divider></mat-divider>
+	</mat-list-item>
+</mat-list>

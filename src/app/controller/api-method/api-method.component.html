@@ -1,0 +1,23 @@
+<form [formGroup]="methodDetailsForm" class="form-border" autocomplete="off">
+    <mat-form-field>
+        <mat-label>Method Name</mat-label>
+        <input type="text" matInput trim="blur" placeholder="E.g. students" formControlName="methodName" minlength="1" maxlength="150" required pattern="^\S*$">
+    </mat-form-field>
+    <div class="form-error-message" *ngIf="methodName.errors && (methodName.dirty || methodName.touched)">
+        <p *ngIf="methodName.errors.required">Method name is required</p>
+        <p *ngIf="methodName.errors.minlength">Method name must be atleast {{methodName.errors.minlength.requiredLength}}
+            characters long</p>
+        <p *ngIf="methodName.errors.pattern">Method name must not have spaces</p>
+    </div>
+
+    <div class="verbs">
+        <mat-label>Verbs</mat-label><br>
+        <mat-checkbox formControlName="get" color="primary">GET</mat-checkbox>&nbsp;&nbsp;
+        <mat-checkbox formControlName="put" color="primary">PUT</mat-checkbox>&nbsp;&nbsp;
+        <mat-checkbox formControlName="post" color="primary">POST</mat-checkbox>&nbsp;&nbsp;
+        <mat-checkbox formControlName="delete" color="primary">DELETE</mat-checkbox>&nbsp;&nbsp;
+    </div>
+    <div class="form-error-message" *ngIf="!(get.value || put.value || post.value || delete.value)">
+        <p>Select Verb(s)</p>
+    </div>
+</form>

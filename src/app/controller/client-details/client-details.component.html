@@ -1,0 +1,81 @@
+<mat-toolbar color="primary">
+    <mat-toolbar-row>
+        <mat-icon (click)="location.back()">arrow_back</mat-icon>
+        <span>Client Details</span>
+        <div class="toolbar-action">
+            <mat-icon (click)="deleteClientDetails()">delete</mat-icon>&nbsp;&nbsp;&nbsp;
+            <mat-icon (click)="submitClientDetails()">save</mat-icon>
+        </div>
+    </mat-toolbar-row>
+</mat-toolbar>
+<form [formGroup]="clientDetailsForm" class="form" autocomplete="off">
+    <mat-form-field>
+        <input type="text" matInput trim="blur" placeholder="Client Company" formControlName="clientCompany"
+            minlength="1" maxlength="150" required>
+    </mat-form-field>
+    <div class="form-error-message" *ngIf="clientCompany.errors && (clientCompany.dirty || clientCompany.touched)">
+        <p *ngIf="clientCompany.errors.required">Client Company is required</p>
+        <p *ngIf="clientCompany.errors.minlength">Client Company must be atleast
+            {{clientCompany.errors.minlength.requiredLength}}
+            characters long</p>
+    </div>
+
+    <mat-form-field>
+        <input type="email" matInput trim="blur" placeholder="Client Email" formControlName="clientEmail" minlength="1"
+            maxlength="150" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$" required>
+    </mat-form-field>
+    <div class="form-error-message" *ngIf="clientEmail.errors && (clientEmail.dirty || clientEmail.touched)">
+        <p *ngIf="clientEmail.errors.required">Client Email is required</p>
+        <p *ngIf="clientEmail.errors.minlength">Client Email must be atleast
+            {{clientemail.errors.minlength.requiredLength}}
+            characters long</p>
+        <p *ngIf="clientEmail.errors.pattern">Enter a valid email id</p>
+    </div>
+
+    <mat-form-field>
+        <input type="email" matInput trim="blur" placeholder="Provider Email" formControlName="providerEmail"
+            minlength="1" maxlength="150" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$" required>
+    </mat-form-field>
+    <div class="form-error-message" *ngIf="providerEmail.errors && (providerEmail.dirty || providerEmail.touched)">
+        <p *ngIf="providerEmail.errors.required">Provider Email is required</p>
+        <p *ngIf="providerEmail.errors.minlength">Provider Email must be atleast
+            {{providerEmail.errors.minlength.requiredLength}}
+            characters long</p>
+        <p *ngIf="providerEmail.errors.pattern">Enter a valid email id</p>
+    </div>
+
+    <mat-form-field>
+        <input type="text" matInput trim="blur" placeholder="Description" formControlName="description" minlength="1"
+            maxlength="150" required>
+    </mat-form-field>
+    <div class="form-error-message" *ngIf="description.errors && (description.dirty || description.touched)">
+        <p *ngIf="description.errors.required">Description is required</p>
+        <p *ngIf="description.errors.minlength">Description must be atleast
+            {{providerEmail.errors.minlength.requiredLength}}
+            characters long</p>
+    </div>
+
+    <mat-form-field>
+        <mat-label>Expires On</mat-label>
+        <input matInput [min]="minDate" [max]="maxDate" [matDatepicker]="expiryDate" formControlName="expiresOn" required readonly>
+        <mat-datepicker-toggle matSuffix [for]="expiryDate"></mat-datepicker-toggle>
+        <mat-datepicker #expiryDate disabled="false"></mat-datepicker>
+    </mat-form-field>
+    <div class="form-error-message" *ngIf="expiresOn.errors && (expiresOn.dirty || expiresOn.touched)">
+        <p *ngIf="expiresOn.errors.required">Expiry Date is required</p>
+        <!-- <p *ngIf="expiresOn.errors.pattern">Enter a correct Expiry Date</p> -->
+    </div>
+
+    <div>
+        <mat-label>Methods</mat-label>
+        <button mat-button (click)="addMethod()">Add</button>
+    </div>
+    <mat-list>
+        <mat-list-item *ngFor="let method of methods; let i = index" class="method">
+            <div>
+                <mat-icon class="close" (click)="deleteMethod(i)">delete</mat-icon>
+                <app-api-method></app-api-method>
+            </div>
+        </mat-list-item>
+    </mat-list>
+</form>

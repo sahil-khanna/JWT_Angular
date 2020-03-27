@@ -1,0 +1,14 @@
+.method {
+    height: auto!important;
+    padding: 10px!important;
+}
+
+.close {
+    position: absolute!important;
+    top: -10px!important;
+    left: 320px!important;
+}
+
+.toolbar-action {
+    padding-left: 65%!important;
+}

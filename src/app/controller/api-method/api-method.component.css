@@ -1,0 +1,9 @@
+.form-border {
+    border: purple;
+    border-width: 1px;
+    border-style: solid;
+}
+.verbs {
+    margin: 10px;
+    padding-bottom: 10px;
+}

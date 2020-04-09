@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
 })
 export class ClientsComponent implements OnInit {
 
-	private clients;
+	private clients: [any];
 
 	constructor(private webAPI: WebAPIService, private router: Router) { }
 
@@ -24,7 +24,8 @@ export class ClientsComponent implements OnInit {
 			priority: 'high',
 			callback: function (_response: any) {
 				if (_response.code === 0) {
-					this.tokens = _response.data;
+					$this.clients = _response.data;
+					console.log($this.clients);
 				} else {
 					// alert(_response.message);
 				}
@@ -32,7 +33,11 @@ export class ClientsComponent implements OnInit {
 		});
 	}
 
-	private add() {
+	add() {
 		this.router.navigate(['client-details']);
+	}
+
+	edit(index: number) {
+		this.router.navigate(['client-details'], { queryParams: {data: JSON.stringify(this.clients[index])} });
 	}
 }

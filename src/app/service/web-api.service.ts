@@ -107,7 +107,8 @@ export class WebAPIService {
 			case 'tokens': {
 				reqParams = {
 					type: 'GET',
-					url: this.baseUrl + '/token' + this.processURLParameters(payload.urlParams)
+					url: this.baseUrl + '/token' + this.processURLParameters(payload.urlParams),
+					body: payload.body
 				};
 				break;
 			}
@@ -122,7 +123,8 @@ export class WebAPIService {
 			case 'delete-token': {
 				reqParams = {
 					type: 'DELETE',
-					url: this.baseUrl + '/token' + this.processURLParameters(payload.urlParams)
+					url: this.baseUrl + '/token' + this.processURLParameters(payload.urlParams),
+					body: payload.body
 				};
 				break;
 			}

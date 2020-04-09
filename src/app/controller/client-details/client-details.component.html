@@ -1,14 +1,18 @@
 <mat-toolbar color="primary">
     <mat-toolbar-row>
-        <mat-icon (click)="location.back()">arrow_back</mat-icon>
+        <mat-icon (click)="location.back()" style="padding-right: 10px;">arrow_back</mat-icon>
         <span>Client Details</span>
-        <div class="toolbar-action">
-            <mat-icon (click)="deleteClientDetails()">delete</mat-icon>&nbsp;&nbsp;&nbsp;
-            <mat-icon (click)="submitClientDetails()">save</mat-icon>
-        </div>
+        <mat-icon *ngIf="(existingClient && !existingClient.status)" (click)="blockClient(true)" style="margin-left: auto;">lock</mat-icon>
+        <mat-icon *ngIf="(existingClient && existingClient.status)" (click)="blockClient(false)" style="margin-left: auto;">lock_open</mat-icon>
+        <mat-icon (click)="deleteClient()" style="margin-left: auto;">delete</mat-icon>
+        <mat-icon (click)="submitClientDetails()" style="margin-left: auto;">save</mat-icon>
     </mat-toolbar-row>
 </mat-toolbar>
 <form [formGroup]="clientDetailsForm" class="form" autocomplete="off">
+    <mat-form-field *ngIf="token.value">
+        <input type="text" matInput trim="blur" placeholder="Token" formControlName="token" readonly>
+    </mat-form-field>
+
     <mat-form-field>
         <input type="text" matInput trim="blur" placeholder="Client Company" formControlName="clientCompany"
             minlength="1" maxlength="150" required>
@@ -57,7 +61,7 @@
 
     <mat-form-field>
         <mat-label>Expires On</mat-label>
-        <input matInput [min]="minDate" [max]="maxDate" [matDatepicker]="expiryDate" formControlName="expiresOn" required readonly>
+        <input matInput [min]="minDate" [max]="maxDate" [matDatepicker]="expiryDate" formControlName="expiresOn" [(ngModel)]="expiresOn.value" required readonly>
         <mat-datepicker-toggle matSuffix [for]="expiryDate"></mat-datepicker-toggle>
         <mat-datepicker #expiryDate disabled="false"></mat-datepicker>
     </mat-form-field>

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { FormControl, FormGroup, NgModel, FormArray } from '@angular/forms';
 
 @Component({
@@ -13,13 +13,7 @@ export class ApiMethodComponent implements OnInit {
 	private put = new FormControl();
 	private post = new FormControl();
 	private delete = new FormControl();
-	// private verbs = new FormArray();
-
-	// private get = true;
-	// private put = false;
-	// private post = true;
-	// private delete = true;
-
+	
 	public methodDetailsForm = new FormGroup({
 		methodName: this.methodName,
 		get: this.get,
@@ -34,16 +28,28 @@ export class ApiMethodComponent implements OnInit {
 		this.get.setValue(true);
 	}
 
-	// submitMethodDetails() {
-	// 	if (this.methodDetailsForm.invalid) {
-	// 		for (const key in this.methodDetailsForm.controls) {
-	// 			if (this.methodDetailsForm.controls.hasOwnProperty(key)) {
-	// 				this.methodDetailsForm.controls[key].markAsTouched();
-	// 			}
-	// 		}
-	// 		return;
-	// 	}
-	// }
+	fill(payload: any) {
+		setTimeout(() => {
+			console.log(payload);
+			this.methodName.setValue(payload.name);
+
+			payload.verbs.forEach(verb => {
+				if (verb == 'GET') {
+					this.get.setValue(true);
+				}
+				if (verb == 'POST') {
+					this.post.setValue(true);
+				}
+				if (verb == 'DELETE') {
+					this.delete.setValue(true);
+				}
+				if (verb == 'PUT') {
+					this.put.setValue(true);
+				}
+			});
+		});
+		
+	}
 
 	payload() {
 		let verbs = [];

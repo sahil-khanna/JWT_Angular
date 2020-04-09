@@ -4,15 +4,18 @@ import { WebAPIService } from '../../service/web-api.service';
 import { Location } from '@angular/common';
 import { Method } from 'src/app/models/method';
 import { ApiMethodComponent } from '../api-method/api-method.component';
+import * as moment from 'moment';
+import { ActivatedRoute, Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 export const DATE_FORMATS = {
 	parse: {
-	  dateInput: 'M/DD/YYYY',
+		dateInput: 'M/DD/YYYY',
 	},
 	display: {
-	  dateInput: 'MM/DD/YYYY'
+		dateInput: 'MM/DD/YYYY'
 	},
-  };
+};
 
 @Component({
 	selector: 'app-client-details',
@@ -29,6 +32,11 @@ export class ClientDetailsComponent implements OnInit {
 	private providerEmail = new FormControl();
 	private description = new FormControl();
 	private expiresOn = new FormControl();
+	private token = new FormControl();
+
+	private existingClient: any;
+
+	private expiryDate: any;
 
 	private minDate: Date;
 	private maxDate: Date;
@@ -40,43 +48,66 @@ export class ClientDetailsComponent implements OnInit {
 		clientEmail: this.clientEmail,
 		providerEmail: this.providerEmail,
 		description: this.description,
-		expiresOn: this.expiresOn
+		expiresOn: this.expiresOn,
+		token: this.token
 	});
 
 	constructor(
 		private webAPI: WebAPIService,
+		private snackBar: MatSnackBar,
 		// private alertHelper: AlertHelper,
-		// private categoriesService: CategoriesService,
-		// private languagesService: LanguagesService,
-		// private booksService: BooksService,
 		// private loadingIndicator: LoadingIndicatorService,
+		private activatedRoute: ActivatedRoute,
+		private router: Router,
 		private location: Location
 	) {
 		this.minDate = new Date();
 		this.maxDate = new Date(this.minDate.getFullYear() + 1, this.minDate.getMonth(), this.minDate.getDay());
-	}
 
-	ngOnInit() {
-		this.addMethod();
-		setTimeout(() => {
-			// this.loadingIndicator.show();
-
-			// this.categoriesService.getAll()
-			// .then((res) => {
-			// 	this.categories = res as [];
-			// })
-			// .finally(() => {
-			// 	this.languagesService.getAll()
-			// 	.then((res) => {
-			// 		this.languages = res as [];
-			// 	})
-			// 	.finally(() => {
-			// 		this.loadingIndicator.hide();
-			// 	});
-			// });
+		// Read the data from query string
+		this.activatedRoute.queryParams.subscribe(params => {
+			if (params.data) {
+				this.existingClient = JSON.parse(params.data);
+				this.existingClient.data.authorizedMethods.forEach(authorizedMethod => {
+					this.methods.push(this.methods.length);
+				});
+			}
 		});
 	}
 
+	ngOnInit() {
+		// Populate data if there was a querystring
+		if (!this.existingClient) {
+			return;
+		}
+		
+		this.clientCompany.setValue(this.existingClient.data.issuer.clientCompany);
+		this.clientEmail.setValue(this.existingClient.data.issuer.clientEmail);
+		this.providerEmail.setValue(this.existingClient.data.issuer.providerEmail);
+		this.description.setValue(this.existingClient.data.issuer.description);
+		this.expiresOn.setValue(moment(this.existingClient.data.expiresOn, 'x').toDate());
+		this.token.setValue(this.existingClient.token);
+
+		this.clientCompany.disable({ onlySelf: true });
+		this.clientEmail.disable({ onlySelf: true });
+		this.providerEmail.disable({ onlySelf: true });
+		this.token.disable({ onlySelf: true });
+	}
+
+	ngAfterViewInit() {
+		// Populate methods if there was a querystring
+		if (!this.existingClient) {
+			return;
+		}
+
+		for (let index = 0; index < this.existingClient.data.authorizedMethods.length; index++) {
+			let authorizedMethod = this.existingClient.data.authorizedMethods[index];
+			let apiMethod = this.apiMethodComponents["_results"][index];
+			apiMethod.fill(authorizedMethod);
+		}
+	}
+
+	// Button Action
 	submitClientDetails() {
 		if (this.clientDetailsForm.invalid) {
 			for (const key in this.clientDetailsForm.controls) {
@@ -99,64 +130,123 @@ export class ClientDetailsComponent implements OnInit {
 			}
 		});
 
-		let methods = [];
-		apiMethods.forEach(apiMethodComponent => {
-			methods.push(apiMethodComponent.payload());
-		});
-
-		let payload = {
-			issuer: {
-				clientCompany: this.clientCompany.value,
-				clientEmail: this.clientEmail.value,
-				providerEmail: this.providerEmail.value
-			},
-			authorizedMethods: methods,
-			expiresOn: this.expiresOn.value.toISOString().split('T')[0]
+		if (this.existingClient) {
+			this.updateClientDetails();
 		}
+		else {
+			this.addClientDetails();
+		}
+	}
 
-		console.log(JSON.stringify(payload));
-
-		// this.loadingIndicator.show();
-		debugger;
+	deleteClient() {
+		let payload = {
+			token: this.existingClient.token
+		};
 		this.webAPI.execute({
-		  method: "generate-token",
-		  priority: "high",
-		  body: payload,
-		  callback: (response) => {
-			  debugger;
-		    console.log(response)
-		  }
-		})
-
-		// this.methods.push();
+			method: "delete-token",
+			priority: "high",
+			body: payload,
+			callback: (response) => {
+				this.showSnackBar(response.message);
+				if (response.code == 0) {
+					this.location.back();
+				}
+			}
+		});
 	}
 
-	deleteClientDetails() {
-		
-	}
+	blockClient(status: boolean) {
+		var payload = this.clientDetailsPayload()
+		payload['status'] = status;
 
-	submit() {
-		// this.loadingIndicator.show();
-		// this.webAPI.execute({
-		//   method: 'update-token',
-		//   priority: 'high',
-		//   callback: (response) => {
-		//     console.log(response)
-		//   }
-		// })
-
-		// this.methods.push();
+		this.webAPI.execute({
+			method: "update-token",
+			priority: "high",
+			body: payload,
+			callback: (response) => {
+				this.showSnackBar(response.message);
+				if (response.code == 0) {
+					this.location.back();
+				}
+			}
+		});
 	}
 
 	deleteMethod(index: number) {
 		if (this.methods.length == 1) {
 			return;
 		}
-		
+
 		this.methods.splice(index, 1);
 	}
 
 	addMethod() {
 		this.methods.push(this.methods.length);
+	}
+
+	// Other Methods
+	private clientDetailsPayload() {
+		let apiMethods = this.apiMethodComponents["_results"];
+
+		let methods = [];
+		apiMethods.forEach(apiMethodComponent => {
+			methods.push(apiMethodComponent.payload());
+		});
+
+		var payload = {
+			issuer: {
+				clientCompany: this.clientCompany.value,
+				clientEmail: this.clientEmail.value,
+				providerEmail: this.providerEmail.value,
+				description: this.description.value
+			},
+			authorizedMethods: methods,
+			status: true,
+			expiresOn: moment(this.expiresOn.value.toISOString(), 'YYYY-MM-DDThh:mm:ss.Z').format('x')
+		}
+
+		if (this.existingClient) {
+			payload['token'] = this.existingClient.token;
+		}
+
+		return payload;
+	}
+
+	private addClientDetails() {
+		let payload = this.clientDetailsPayload()
+		this.webAPI.execute({
+			method: 'generate-token',
+			priority: "high",
+			body: payload,
+			callback: (response) => {
+				this.showSnackBar(response.message);
+				if (response.code == 0) {
+					this.location.back();
+				}
+			}
+		})
+	}
+
+	private updateClientDetails() {
+		var payload = this.clientDetailsPayload()
+		payload['token'] = this.existingClient.token;
+
+		this.webAPI.execute({
+			method: 'update-token',
+			priority: "high",
+			body: payload,
+			callback: (response) => {
+				this.showSnackBar(response.message);
+				if (response.code == 0) {
+					this.location.back();
+				}
+			}
+		})
+	}
+
+	private showSnackBar(message: string) {
+		this.snackBar.open(message, '', {
+			duration: 3000
+		});
 	}
 }

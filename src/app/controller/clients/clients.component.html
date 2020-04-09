@@ -6,10 +6,11 @@
 </mat-toolbar>
 
 <mat-list>
-	<mat-list-item *ngFor="let book of books">
-		<h1 mat-line><b>{{book.data.title}}</b></h1>
-		<p mat-line>{{book.data.author}}</p>
-		<p>₹{{book.data.mrp}}</p>
+	<mat-list-item *ngFor="let client of clients; let i = index" (click)="edit(i)">
+		<h1 mat-line><b>{{client.data.issuer.clientCompany}}</b></h1>
+		<p mat-line>{{client.data.issuer.description}}</p>
+		<mat-icon *ngIf="!client.status">lock</mat-icon>
+		<mat-icon *ngIf="client.status">lock_open</mat-icon>
 		<mat-icon>keyboard_arrow_right</mat-icon>
 		<mat-divider></mat-divider>
 	</mat-list-item>

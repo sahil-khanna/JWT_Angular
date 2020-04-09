@@ -10,5 +10,10 @@
 }
 
 .toolbar-action {
-    padding-left: 65%!important;
+    /* padding-left: 65%!important; */
+    /* float: right!important; */
+}
+
+.toolbar-button {
+    padding-right: 10px!important;
 }
